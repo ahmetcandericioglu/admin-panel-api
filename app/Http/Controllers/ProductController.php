@@ -12,7 +12,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-
+        return Product::all();
     }
 
     /**
@@ -20,7 +20,22 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'producttitle' => 'required',
+            'productcategoryid' => 'nullable',
+            'barcode' => 'required',
+            'productstatus' => 'required',
+        ]);
+
+        Product::create([
+            'producttitle' => $request->producttitle,
+            'productcategoryid' => $request->productcategoryid,
+            'barcode' => $request->barcode,
+            'productstatus' => $request->productstatus,
+        ]);
+
+        return response()->json(['message' => 'Product added successfully']);
+
     }
 
     /**
@@ -28,7 +43,7 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return Product::find($id);
     }
 
     /**
@@ -36,7 +51,21 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'producttitle' => 'required',
+            'productcategoryid' => 'nullable',
+            'barcode' => 'required',
+            'productstatus' => 'required',
+        ]);
+
+        $product = Product::find($id);
+        $product->producttitle = $request->producttitle;
+        $product->productcategoryid = $request->productcategoryid;
+        $product->barcode = $request->barcode;
+        $product->productstatus = $request->productstatus;
+        $product->save();
+
+        return response()->json(['message' => 'Product updated successfully']);
     }
 
     /**
@@ -44,6 +73,7 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Product::destroy($id);
+        return response()->json(['message' => 'Product deleted successfully']);
     }
 }
