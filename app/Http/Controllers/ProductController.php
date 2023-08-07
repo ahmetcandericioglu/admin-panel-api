@@ -76,4 +76,11 @@ class ProductController extends Controller
         Product::destroy($id);
         return response()->json(['message' => 'Product deleted successfully']);
     }
+
+    public function destroySelected($ids)
+    {
+        $ids = explode(",",$ids);
+        Product::whereIn("id",$ids)->delete();
+        return response()->json(['message' => 'Selected products deleted successfully']);
+    }
 }

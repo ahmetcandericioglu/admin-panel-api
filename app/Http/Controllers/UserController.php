@@ -60,7 +60,7 @@ class UserController extends Controller
         $user = User::find($id);
         $user->username = $request->username;
         $user->usertitle = $request->usertitle;
-        $user->password = $request->password;
+        $user->password = Hash::make($request->password);
         $user->save();
 
         return response()->json(['message' => 'User updated successfully']);
@@ -73,5 +73,12 @@ class UserController extends Controller
     {
         User::destroy($id);
         return response()->json(["message" => "User deleted successfully"]);
+    }
+
+    public function destroySelected($ids)
+    {
+        $ids = explode(",",$ids);
+        User::whereIn("id",$ids)->delete();
+        return response()->json(['message' => 'Selected users deleted successfully']);
     }
 }

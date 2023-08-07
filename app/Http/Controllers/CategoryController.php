@@ -75,4 +75,11 @@ class CategoryController extends Controller
         Category::destroy($id);
         return response()->json(['message' => 'Category deleted']);
     }
+
+    public function destroySelected($ids)
+    {
+        $ids = explode(",",$ids);
+        Category::whereIn("id",$ids)->delete();
+        return response()->json(['message' => 'Selected categories deleted successfully']);
+    }
 }
