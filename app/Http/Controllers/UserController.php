@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use http\Message;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -11,7 +14,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::all();
+        return $users;
     }
 
     /**
@@ -19,7 +23,19 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'usertitle' => 'required',
+            'username' => 'required|unique:users|alpha:ascii',
+            'password' => 'required|min:6'
+         ]);
+
+        User::create([
+            'username' => $request->username,
+            'usertitle' => $request->usertitle,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json(['message' => 'User added successfully']);
     }
 
     /**
@@ -27,7 +43,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return User::find($id);
     }
 
     /**
@@ -35,7 +51,19 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'usertitle' => 'required',
+            'username' => 'required|alpha:ascii|unique:users,id,'.$id,
+            'password' => 'required|min:6'
+        ]);
+
+        $user = User::find($id);
+        $user->username = $request->username;
+        $user->usertitle = $request->usertitle;
+        $user->password = $request->password;
+        $user->save();
+
+        return response()->json(['message' => 'User updated successfully']);
     }
 
     /**
@@ -43,6 +71,7 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        User::destroy($id);
+        return response()->json(["message" => "User deleted successfully"]);
     }
 }
