@@ -21,6 +21,12 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'categorytitle' => 'required|unique:categories',
+            'categorydescription' => 'required',
+            'categorystatus' => 'required',
+        ]);
+
         $category = new Category();
         $category->categorytitle = $request->categorytitle;
         $category->categorydescription = $request->categorydescription;
@@ -45,6 +51,12 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $request->validate([
+            'categorytitle' => 'required|unique:categories,id,'. $id,
+            'categorydescription' => 'required',
+            'categorystatus' => 'required',
+        ]);
+
         $category = Category::find($id);
         $category->categorytitle = $request->categorytitle;
         $category->categorydescription = $request->categorydescription;
