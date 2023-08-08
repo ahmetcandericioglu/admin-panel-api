@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('categorytitle')->unique();
             $table->string('categorydescription');
-            $table->string('categorystatus');
+            $table->integer('categorystatus');
             $table->softDeletes();
             $table->timestamps();
         });
