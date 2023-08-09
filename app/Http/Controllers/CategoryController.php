@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -21,11 +23,16 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+
+        $validator = Validator::make($request->all(), [
             'categorytitle' => 'required|unique:categories',
             'categorydescription' => 'required',
             'categorystatus' => 'required',
         ]);
+
+        if ($validator->fails()) {
+            throw new HttpResponseException(response()->json($validator->errors(), 422));
+        }
 
         $category = new Category();
         $category->categorytitle = $request->categorytitle;
@@ -43,6 +50,9 @@ class CategoryController extends Controller
     public function show(string $id)
     {
         $category = Category::find($id);
+        if (!$category)
+            return response()->json(['message' => 'There is no user with this id']);
+
         return $category;
     }
 
@@ -51,13 +61,20 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'categorytitle' => 'required|unique:categories,id,'. $id,
+        $category = Category::find($id);
+        if (!$category)
+            return response()->json(['message' => 'There is no user with this id']);
+
+        $validator = Validator::make($request->all(), [
+            'categorytitle' => 'required|unique:categories,id,' . $id,
             'categorydescription' => 'required',
             'categorystatus' => 'required',
         ]);
 
-        $category = Category::find($id);
+        if ($validator->fails()) {
+            throw new HttpResponseException(response()->json($validator->errors(), 422));
+        }
+
         $category->categorytitle = $request->categorytitle;
         $category->categorydescription = $request->categorydescription;
         $category->categorystatus = $request->categorystatus;
@@ -72,14 +89,18 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
+        $category = Category::find($id);
+        if (!$category)
+            return response()->json(['message' => 'There is no user with this id']);
+
         Category::destroy($id);
         return response()->json(['message' => 'Category deleted']);
     }
 
     public function destroySelected($ids)
     {
-        $ids = explode(",",$ids);
-        Category::whereIn("id",$ids)->delete();
+        $ids = explode(",", $ids);
+        Category::whereIn("id", $ids)->delete();
         return response()->json(['message' => 'Selected categories deleted successfully']);
     }
 }
