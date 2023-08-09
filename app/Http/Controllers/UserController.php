@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use http\Message;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -15,8 +16,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
-        return $users;
+        return User::all();
     }
 
     /**
@@ -24,11 +24,15 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'usertitle' => 'required',
             'username' => 'required|unique:users|alpha:ascii',
             'password' => 'required|min:6'
-         ]);
+        ]);
+
+        if ($validator->fails()) {
+            throw new HttpResponseException(response()->json($validator->errors(), 422));
+        }
 
         User::create([
             'username' => $request->username,
@@ -44,7 +48,11 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        return User::find($id);
+        $user = User::find($id);
+        if (!$user)
+            return response()->json(['message' => 'There is no user with this id']);
+
+        return $user;
     }
 
     /**
@@ -52,13 +60,20 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
+        $user = User::find($id);
+        if (!$user)
+            return response()->json(['message' => 'There is no user with this id']);
+
+        $validator = Validator::make($request->all(), [
             'usertitle' => 'required',
-            'username' => 'required|alpha:ascii|unique:users,id,'.$id,
+            'username' => 'required|alpha:ascii|unique:users,username,'.$id,
             'password' => 'required|min:6'
         ]);
 
-        $user = User::find($id);
+        if ($validator->fails()) {
+            throw new HttpResponseException(response()->json($validator->errors(), 422));
+        }
+
         $user->username = $request->username;
         $user->usertitle = $request->usertitle;
         $user->password = Hash::make($request->password);
@@ -72,6 +87,10 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
+        $user = User::find($id);
+        if (!$user)
+            return response()->json(['message' => 'There is no user with this id']);
+
         User::destroy($id);
         return response()->json(["message" => "User deleted successfully"]);
     }

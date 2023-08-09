@@ -35,7 +35,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/category/{id}', 'show');
         Route::put('/category/{id}', 'update');
         Route::delete('/category/{id}', 'destroy');
-        Route::delete('/selected-categories/{ids}', 'destroySelected');
+        Route::delete('/delete-categories/{ids}', 'destroySelected');
     });
     Route::controller(UserController::class)->group(function () {
         Route::get('/users', 'index');
@@ -43,7 +43,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/user/{id}', 'show');
         Route::put('/user/{id}', 'update');
         Route::delete('/user/{id}', 'destroy');
-        Route::delete('/selected-users/{ids}', 'destroySelected');
+        Route::delete('/delete-users/{ids}', 'destroySelected');
     });
     Route::controller(ProductController::class)->group(function () {
         Route::get('/products', 'index');
@@ -51,7 +51,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/product/{id}', 'show');
         Route::put('/product/{id}', 'update');
         Route::delete('/product/{id}', 'destroy');
-        Route::delete('/selected-products/{ids}', 'destroySelected');
+        Route::delete('/delete-products/{ids}', 'destroySelected');
     });
 });
 
