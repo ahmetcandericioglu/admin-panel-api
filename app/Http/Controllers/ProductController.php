@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -21,12 +23,16 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'producttitle' => 'required',
             'productcategoryid' => 'nullable',
             'barcode' => 'required',
             'productstatus' => 'required',
         ]);
+
+        if ($validator->fails()) {
+            throw new HttpResponseException(response()->json($validator->errors(), 422));
+        }
 
         Product::create([
             'producttitle' => $request->producttitle,
@@ -44,7 +50,11 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        return Product::find($id);
+        $product = Product::find($id);
+        if (!$product)
+            return response()->json(['message' => 'There is no product with this id']);
+
+        return $product;
     }
 
     /**
@@ -52,14 +62,21 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
+        $product = Product::find($id);
+        if (!$product)
+            return response()->json(['message' => 'There is no product with this id']);
+
+        $validator = Validator::make($request->all(), [
             'producttitle' => 'required',
             'productcategoryid' => 'nullable',
             'barcode' => 'required',
             'productstatus' => 'required',
         ]);
 
-        $product = Product::find($id);
+        if ($validator->fails()) {
+            throw new HttpResponseException(response()->json($validator->errors(), 422));
+        }
+
         $product->producttitle = $request->producttitle;
         $product->productcategoryid = $request->productcategoryid;
         $product->barcode = $request->barcode;
@@ -74,6 +91,10 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
+        $product = Product::find($id);
+        if (!$product)
+            return response()->json(['message' => 'There is no product with this id']);
+
         Product::destroy($id);
         return response()->json(['message' => 'Product deleted successfully']);
     }

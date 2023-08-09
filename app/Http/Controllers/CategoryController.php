@@ -51,7 +51,7 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
         if (!$category)
-            return response()->json(['message' => 'There is no user with this id']);
+            return response()->json(['message' => 'There is no category with this id']);
 
         return $category;
     }
@@ -63,7 +63,7 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
         if (!$category)
-            return response()->json(['message' => 'There is no user with this id']);
+            return response()->json(['message' => 'There is no category with this id']);
 
         $validator = Validator::make($request->all(), [
             'categorytitle' => 'required|unique:categories,id,' . $id,
@@ -91,7 +91,7 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
         if (!$category)
-            return response()->json(['message' => 'There is no user with this id']);
+            return response()->json(['message' => 'There is no category with this id']);
 
         Category::destroy($id);
         return response()->json(['message' => 'Category deleted']);
