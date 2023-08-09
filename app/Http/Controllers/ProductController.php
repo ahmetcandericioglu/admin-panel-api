@@ -26,7 +26,7 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'producttitle' => 'required',
             'productcategoryid' => 'nullable',
-            'barcode' => 'required',
+            'barcode' => 'required|unique:products',
             'productstatus' => 'required',
         ]);
 
@@ -69,7 +69,7 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'producttitle' => 'required',
             'productcategoryid' => 'nullable',
-            'barcode' => 'required',
+            'barcode' => 'required|unique:products,barcode,'.$id,
             'productstatus' => 'required',
         ]);
 

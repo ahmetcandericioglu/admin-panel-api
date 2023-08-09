@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('producttitle');
             $table->string('productcategoryid')->nullable();
-            $table->string('barcode');
+            $table->string('barcode')->unique();
             $table->integer('productstatus');
             $table->softDeletes();
             $table->timestamps();

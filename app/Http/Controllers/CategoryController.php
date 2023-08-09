@@ -66,7 +66,7 @@ class CategoryController extends Controller
             return response()->json(['message' => 'There is no category with this id']);
 
         $validator = Validator::make($request->all(), [
-            'categorytitle' => 'required|unique:categories,id,' . $id,
+            'categorytitle' => 'required|unique:categories,categorytitle,' . $id,
             'categorydescription' => 'required',
             'categorystatus' => 'required',
         ]);
